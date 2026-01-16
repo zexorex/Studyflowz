@@ -1,13 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const connectDB = require('./config/db');
+const mongoose = require('mongoose');
 
 // Load environment variables
 dotenv.config();
-
-// Connect to Database
-connectDB();
 
 // Initialize the app
 const app = express();
@@ -20,19 +17,30 @@ app.use(cors({
 }));
 app.use(express.json()); // Parse JSON bodies
 
-// Import Routes
-const authRoutes = require('./routes/auth');
-const classroomRoutes = require('./routes/classroom');
-const aiRoutes = require('./routes/ai');
+// --- DATABASE CONNECTION ---
+// We connect directly here to keep it simple and robust
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch(err => console.error("❌ DB Connection Error:", err));
 
-// Use Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/classroom', classroomRoutes);
-app.use('/api/ai', aiRoutes);
+// --- ROUTES ---
+// (These are commented out until we create the route files in the next step!)
+// const authRoutes = require('./routes/auth');
+// const classroomRoutes = require('./routes/classroom');
+// const aiRoutes = require('./routes/ai');
 
-// Health Check
+// app.use('/api/auth', authRoutes);
+// app.use('/api/classroom', classroomRoutes);
+// app.use('/api/ai', aiRoutes);
+
+// Health Check Route
 app.get('/', (req, res) => {
   res.send('Studyflowz API is running...');
+});
+
+// Start Server
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
 
 // Error Handling Middleware (Optional but good practice)
